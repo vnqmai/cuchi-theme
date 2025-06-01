@@ -14,6 +14,15 @@ use function Roots\bundle;
  * @return void
  */
 add_action('wp_enqueue_scripts', function () {
+    // Preconnects (added via inline HTML)
+    add_action('wp_head', function () {
+        echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . PHP_EOL;
+        echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . PHP_EOL;
+    }, 0);
+
+    // Enqueue combined Google Fonts stylesheet
+    wp_enqueue_style('sage/google-fonts', 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&family=Archivo+Black&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap', false, null);
+
     bundle('app')->enqueue();
 }, 100);
 
@@ -122,3 +131,12 @@ add_action('widgets_init', function () {
         'id' => 'sidebar-footer',
     ] + $config);
 });
+
+add_filter('big_image_size_threshold', '__return_false');
+
+use Carbon_Fields\Carbon_Fields;
+
+add_action('after_setup_theme', function () {
+    \Carbon_Fields\Carbon_Fields::boot();
+});
+require_once get_theme_file_path('app/CarbonFields/Fields.php');

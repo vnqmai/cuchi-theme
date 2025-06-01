@@ -13,7 +13,7 @@ class Multiple_Media_Control extends WP_Customize_Control {
       <span class="customize-control-title"><?php echo esc_html($this->label); ?></span>
       <textarea rows="4" style="width:100%;" <?php $this->link(); ?>><?php echo esc_textarea($this->value()); ?></textarea>
       <br>
-      <button type="button" class="button select-media">Select Videos</button>
+      <button type="button" class="button select-media">Select Files</button>
     </label>
     <script>
       jQuery(document).ready(function ($) {
@@ -21,9 +21,9 @@ class Multiple_Media_Control extends WP_Customize_Control {
           e.preventDefault();
           const $textarea = $(this).siblings('textarea');
           const frame = wp.media({
-            title: 'Select Videos',
+            title: 'Select Files',
             multiple: true,
-            library: { type: 'video' },
+            library: { type: ['image', 'video'] },
             button: { text: 'Use Selected' }
           });
           frame.on('select', function () {

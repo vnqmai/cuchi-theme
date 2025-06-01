@@ -66,7 +66,15 @@ collect(['setup', 'filters'])
 
 
 // My custom code for theme support and customization
+require_once get_template_directory() . '/app/Custom/MultipleMediaControl.php';
 require_once get_template_directory() . '/vendor/autoload.php';
+use Carbon_Fields\Container;
+use Carbon_Fields\Field;
+
+add_filter('upload_mimes', function ($mimes) {
+    $mimes['svg'] = 'image/svg+xml';
+    return $mimes;
+});
 
 add_theme_support('custom-logo', [
   'height'      => 80,
@@ -75,8 +83,6 @@ add_theme_support('custom-logo', [
   'flex-width'  => true,
   'header-text' => ['site-title', 'site-description'],
 ]);
-
-require_once get_template_directory() . '/app/Custom/MultipleMediaControl.php';
 
 add_action('customize_register', function ($wp_customize) {
     // HERO SECTION
@@ -93,6 +99,102 @@ add_action('customize_register', function ($wp_customize) {
         'section'  => 'custom_header_section',
         'settings' => 'header_image_upload',
     ]));
+
+    // FOOTER SECTION
+    $wp_customize->add_section('footer_section', [
+        'title'    => __('Footer Section', 'sage'),
+        'priority' => 30,
+    ]);
+    $wp_customize->add_setting('footer_logo_upload', [
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'footer_logo_upload_control', [
+        'label'    => __('Footer Image', 'sage'),
+        'section'  => 'footer_section',
+        'settings' => 'footer_logo_upload',
+    ]));
+    $wp_customize->add_setting('footer_title', [
+        'default'           => 'Disconnect to Reconnect',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('footer_title', [
+        'label'   => __('Title', 'sage'),
+        'section' => 'footer_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('footer_name', [
+        'default'           => 'Downtown Cuchi',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('footer_name', [
+        'label'   => __('Name', 'sage'),
+        'section' => 'footer_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('footer_phone', [
+        'default'           => 'P +84 909 907 113',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('footer_phone', [
+        'label'   => __('Phone', 'sage'),
+        'section' => 'footer_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('footer_address', [
+        'default'           => 'Ap Cay Trac, Pham Van Coi, Cu Chi, HCM City, Vietnam',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('footer_address', [
+        'label'   => __('Address', 'sage'),
+        'section' => 'footer_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('footer_copyright', [
+        'default'           => 'Downtown Cuchi 2025 ',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('footer_copyright', [
+        'label'   => __('Copyright', 'sage'),
+        'section' => 'footer_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('footer_form_title', [
+        'default'           => 'Discover the latest Downtown Cuchi Insights ',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('footer_form_title', [
+        'label'   => __('Form Title', 'sage'),
+        'section' => 'footer_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('footer_form_field_name', [
+        'default'           => 'First Name',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('footer_form_field_name', [
+        'label'   => __('Form Field Name', 'sage'),
+        'section' => 'footer_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('footer_form_field_email', [
+        'default'           => 'Email',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('footer_form_field_email', [
+        'label'   => __('Form Field Email', 'sage'),
+        'section' => 'footer_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('footer_form_submit', [
+        'default'           => 'Submit',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('footer_form_submit', [
+        'label'   => __('Submit Button Text', 'sage'),
+        'section' => 'footer_section',
+        'type'    => 'text',
+    ]);
 
 
     // HASHTAGS SECTION
@@ -312,62 +414,304 @@ add_action('customize_register', function ($wp_customize) {
         'section' => 'our_insights_section',
         'type'    => 'text',
     ]);
-
-    if ( class_exists( \Kirki\Kirki::class ) ) {
-        \Kirki\Kirki::add_config( 'theme_config_id', [
-            'capability'    => 'edit_theme_options',
-            'option_type'   => 'theme_mod',
-        ] );
-
-        \Kirki\Field::add_field( [
-            'settings' => 'hero_items',
-            'label'    => esc_html__( 'Hero Items', 'your-textdomain' ),
-            'section'  => 'our_insights_section', // or your custom section
-            'type'     => 'repeater',
-            'fields'   => [
-                'image' => [
-                    'type'  => 'image',
-                    'label' => esc_html__( 'Image', 'your-textdomain' ),
-                ],
-                'text' => [
-                    'type'  => 'text',
-                    'label' => esc_html__( 'Text', 'your-textdomain' ),
-                ],
-                'link' => [
-                    'type'  => 'text',
-                    'label' => esc_html__( 'Link', 'your-textdomain' ),
-                ],
-            ],
-        ] );
-    }
-
+    $wp_customize->add_setting('our_insights_image_urls', [
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control(new Multiple_Media_Control($wp_customize, 'our_insights_image_urls', [
+        'label'   => __('Upload Images', 'sage'),
+        'section' => 'our_insights_section',
+    ]));
     
-    // \Kirki\Field::add_config('sage_config', [
-    //     'capability'    => 'edit_theme_options',
-    //     'option_type'   => 'theme_mod',
-    //     ]);
 
-    //     \Kirki\Field::add_field('sage_config', [
-    //     'type'        => 'repeater',
-    //     'settings'    => 'custom_repeater',
-    //     'label'       => esc_html__('Custom Items'),
-    //     'section'     => 'title_tagline', // or a custom section
-    //     'fields' => [
-    //         'image' => [
-    //         'type'        => 'image',
-    //         'label'       => esc_html__('Image'),
-    //         ],
-    //         'text' => [
-    //         'type'        => 'text',
-    //         'label'       => esc_html__('Text'),
-    //         ],
-    //         'link' => [
-    //         'type'        => 'text',
-    //         'label'       => esc_html__('Link URL'),
-    //         ],
-    //     ],
-    //     'default' => [],
-    // ]);
+    // MEMORIES SECTION
+    $wp_customize->add_section('memories_section', [
+        'title'    => __('Memories Section', 'sage'),
+        'priority' => 30,
+    ]);
+    $wp_customize->add_setting('memories_title', [
+        'default'           => 'Delightful journey filled with unforgettable memories',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('memories_title', [
+        'label'   => __('Title', 'sage'),
+        'section' => 'memories_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('memories_description', [
+        'default'           => "It's the perfect blend of fun, relaxation, and togetherness that will leave you longing to return.",
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('memories_description', [
+        'label'   => __('Description', 'sage'),
+        'section' => 'memories_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('image_urls', [
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control(new Multiple_Media_Control($wp_customize, 'image_urls', [
+        'label'   => __('Upload Images', 'sage'),
+        'section' => 'memories_section',
+    ]));
+
+    // TEAM BUILDING SECTION
+    $wp_customize->add_section('teambuilding_section', [
+        'title'    => __('Team Building Section', 'sage'),
+        'priority' => 30,
+    ]);
+    $wp_customize->add_setting('teambuilding_title', [
+        'default'           => 'TEAM BUILDING',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('teambuilding_title', [
+        'label'   => __('Title', 'sage'),
+        'section' => 'teambuilding_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('teambuilding_subtitle', [
+        'default'           => 'Tammy Nguyen and her team',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('teambuilding_subtitle', [
+        'label'   => __('Subtitle', 'sage'),
+        'section' => 'teambuilding_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('teambuilding_description', [
+        'default'           => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et.',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('teambuilding_description', [
+        'label'   => __('Description', 'sage'),
+        'section' => 'teambuilding_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('teambuilding_image_1', [
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'teambuilding_image_1_control', [
+        'label'    => __('Header Image', 'sage'),
+        'section'  => 'teambuilding_section',
+        'settings' => 'teambuilding_image_1',
+    ]));
+    $wp_customize->add_setting('teambuilding_image_2', [
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'teambuilding_image_2_control', [
+        'label'    => __('Header Image', 'sage'),
+        'section'  => 'teambuilding_section',
+        'settings' => 'teambuilding_image_2',
+    ]));
+    $wp_customize->add_setting('teambuilding_image_3', [
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'teambuilding_image_3_control', [
+        'label'    => __('Header Image', 'sage'),
+        'section'  => 'teambuilding_section',
+        'settings' => 'teambuilding_image_3',
+    ]));
+
+    // ABOUT US SECTION
+    $wp_customize->add_section('aboutus_section', [
+        'title'    => __('About Us Section', 'sage'),
+        'priority' => 30,
+    ]);
+    $wp_customize->add_setting('aboutus_title', [
+        'default'           => 'About Us',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('aboutus_title', [
+        'label'   => __('Title', 'sage'),
+        'section' => 'aboutus_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('aboutus_subtitle', [
+        'default'           => 'A Breath of Fresh Air',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('aboutus_subtitle', [
+        'label'   => __('Subtitle', 'sage'),
+        'section' => 'aboutus_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('aboutus_description', [
+        'default'           => 'Nestled in the tranquil countryside of Củ Chi, The Downtown Cuchi offers an idyllic retreat where lush greenery and open spaces replace the concrete jungle. It’s the perfect destination to disconnect from your daily routine and reconnect with nature. Imagine waking up to the sound of chirping birds, surrounded by breathtaking views of the countryside — a refreshing way to start your day.',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('aboutus_description', [
+        'label'   => __('Description', 'sage'),
+        'section' => 'aboutus_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('aboutus_image_1', [
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'aboutus_image_1_control', [
+        'label'    => __('Header Image', 'sage'),
+        'section'  => 'aboutus_section',
+        'settings' => 'aboutus_image_1',
+    ]));
+    $wp_customize->add_setting('aboutus_image_2', [
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'aboutus_image_2_control', [
+        'label'    => __('Header Image', 'sage'),
+        'section'  => 'aboutus_section',
+        'settings' => 'aboutus_image_2',
+    ]));
+    $wp_customize->add_setting('aboutus_image_3', [
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'aboutus_image_3_control', [
+        'label'    => __('Header Image', 'sage'),
+        'section'  => 'aboutus_section',
+        'settings' => 'aboutus_image_3',
+    ]));
+
+    // MEET THE TEAM SECTION
+    $wp_customize->add_section('meettheteam_section', [
+        'title'    => __('Meet the Team Section', 'sage'),
+        'priority' => 30,
+    ]);
+    $wp_customize->add_setting('meettheteam_title', [
+        'default'           => 'Meet',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('meettheteam_title', [
+        'label'   => __('Title emphasis', 'sage'),
+        'section' => 'meettheteam_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('meettheteam_title_emphasis', [
+        'default'           => 'THE TEAM',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('meettheteam_title_emphasis', [
+        'label'   => __('Title', 'sage'),
+        'section' => 'meettheteam_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('meettheteam_subtitle', [
+        'default'           => 'Danielle Nguyen',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('meettheteam_subtitle', [
+        'label'   => __('Subtitle', 'sage'),
+        'section' => 'meettheteam_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('meettheteam_description', [
+        'default'           => 'Nestled in the tranquil countryside of Củ Chi, The Downtown Cuchi offers an idyllic retreat where lush greenery and open spaces replace the concrete jungle. It’s the perfect destination to disconnect from your daily routine and reconnect with nature. Imagine waking up to the sound of chirping birds, surrounded by breathtaking views of the countryside — a refreshing way to start your day.',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('meettheteam_description', [
+        'label'   => __('Description', 'sage'),
+        'section' => 'meettheteam_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('meettheteam_button_text', [
+        'default'           => 'Call Us',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('meettheteam_button_text', [
+        'label'   => __('Button text', 'sage'),
+        'section' => 'meettheteam_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('meettheteam_image_1', [
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'meettheteam_image_1_control', [
+        'label'    => __('Image 1', 'sage'),
+        'section'  => 'meettheteam_section',
+        'settings' => 'meettheteam_image_1',
+    ]));
+    $wp_customize->add_setting('meettheteam_image_2', [
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'meettheteam_image_2_control', [
+        'label'    => __('Image 2', 'sage'),
+        'section'  => 'meettheteam_section',
+        'settings' => 'meettheteam_image_2',
+    ]));
+    $wp_customize->add_setting('meettheteam_image_3', [
+        'default' => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'meettheteam_image_3_control', [
+        'label'    => __('Image 3', 'sage'),
+        'section'  => 'meettheteam_section',
+        'settings' => 'meettheteam_image_3',
+    ]));
+
+
+    // CONTACT US FORM SECTION
+    $wp_customize->add_section('contactusform_section', [
+        'title'    => __('Contact Us Form Section', 'sage'),
+        'priority' => 30,
+    ]);
+    $wp_customize->add_setting('contactusform_title', [
+        'default'           => 'Contact Us Form',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('contactusform_title', [
+        'label'   => __('Title', 'sage'),
+        'section' => 'contactusform_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('contactusform_name_placeholder', [
+        'default'           => 'Your Name',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('contactusform_name_placeholder', [
+        'label'   => __('Name Placeholder', 'sage'),
+        'section' => 'contactusform_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('contactusform_phone_placeholder', [
+        'default'           => 'Your Phone Number',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('contactusform_phone_placeholder', [
+        'label'   => __('Phone Placeholder', 'sage'),
+        'section' => 'contactusform_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('contactusform_email_placeholder', [
+        'default'           => 'Your Email',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('contactusform_email_placeholder', [
+        'label'   => __('Email Placeholder', 'sage'),
+        'section' => 'contactusform_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('contactusform_note_placeholder', [
+        'default'           => 'Tell Us ...',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('contactusform_note_placeholder', [
+        'label'   => __('Note Placeholder', 'sage'),
+        'section' => 'contactusform_section',
+        'type'    => 'text',
+    ]);
+    $wp_customize->add_setting('contactusform_button_text', [
+        'default'           => 'Submit',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('contactusform_button_text', [
+        'label'   => __('Button text', 'sage'),
+        'section' => 'contactusform_section',
+        'type'    => 'text',
+    ]);
 
 });
 

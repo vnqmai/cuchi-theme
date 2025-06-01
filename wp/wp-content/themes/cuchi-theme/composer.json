@@ -41,6 +41,7 @@
   "require": {
     "php": ">=8.1",
     "aristath/kirki": "^4.2",
+    "htmlburger/carbon-fields": "^3.6",
     "roots/acorn": "^5.0"
   },
   "require-dev": {
@@ -59,7 +60,8 @@
   "extra": {
     "acorn": {
       "providers": [
-        "App\\Providers\\ThemeServiceProvider"
+        "App\\Providers\\ThemeServiceProvider",
+         "App\\Providers\\CarbonFieldsServiceProvider"
       ]
     }
   }

@@ -1,5 +1,5 @@
 {{--
-  Template Name: Custom Template
+  Template Name: Cuchi Downtown Template
 --}}
 
 @extends('layouts.app')
